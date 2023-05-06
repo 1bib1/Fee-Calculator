@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\FeeCalculator\Aggregate\Fee\Service;
 
+use App\FeeCalculator\Domain\Fee\Interface\FeeCalculationServiceInterface;
 use App\FeeCalculator\Domain\Fee\Interface\FeeCalculatorInterface;
 use App\FeeCalculator\Domain\Fee\ValueObject\LoanProposal;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class FeeCalculationService
+class FeeCalculationService implements FeeCalculationServiceInterface
 {
     public function __construct(
         protected readonly ValidatorInterface $validator,

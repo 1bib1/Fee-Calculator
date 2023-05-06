@@ -6,5 +6,5 @@ namespace App\FeeCalculator\Domain\BreakPoint\Interface;
 
 interface BreakPointServiceInterface
 {
-    public function getBreakPoints(): array;
+    public function getBreakPoints(int $term): array;
 }

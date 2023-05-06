@@ -13,8 +13,11 @@ class BreakPointService implements BreakPointServiceInterface
         protected readonly BreakPointRepository $breakPointRepository,
     ) {}
 
-    public function getBreakPoints(): array
+    public function getBreakPoints(int $term): array
     {
+        // There should be some actual logic that would get relevant break points
+        // from database, for specific term
+        // for now, just return all of them
         return $this->breakPointRepository->findAll() ?? [];
     }
 }

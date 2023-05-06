@@ -20,7 +20,7 @@ class FeeCalculator implements FeeCalculatorInterface
 
     public function calculate(LoanProposal $application): float
     {
-        $breakPoints = $this->getBreakPoints();
+        $breakPoints = $this->getBreakPoints($application->term);
         $requestedLoanAmount = (float) $application->amount; // could be int
 
         /** @var BreakPoint $breakPoint */
@@ -48,9 +48,10 @@ class FeeCalculator implements FeeCalculatorInterface
     {
         return (int) (ceil(round($fee / 5, 2)) * 5);
     }
-    private function getBreakPoints(): array
+
+    private function getBreakPoints(int $term): array
     {
-        $breakPoints = $this->breakPointService->getBreakPoints();
+        $breakPoints = $this->breakPointService->getBreakPoints($term);
 
         if (count($breakPoints) === 0) {
             throw new Exception('No break point found');

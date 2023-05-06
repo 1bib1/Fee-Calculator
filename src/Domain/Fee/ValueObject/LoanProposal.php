@@ -13,7 +13,7 @@ class LoanProposal
     public readonly mixed $term;
 
     #[Assert\NotBlank]
-    #[Assert\Type('float'), Assert\Positive, Assert\Range(min: 1000, max: 20000)]
+    #[Assert\Positive, Assert\Range(min: 1000, max: 20000)]
     public readonly mixed $amount;
 
     public function __construct(mixed $term, mixed $amount) {

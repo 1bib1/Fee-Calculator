@@ -21,18 +21,33 @@ class FeeCalculator implements FeeCalculatorInterface
     public function calculate(LoanProposal $application): float
     {
         $breakPoints = $this->getBreakPoints();
+        $amount = (float) $application->amount; // could be int
 
         /** @var BreakPoint $breakPoint */
         foreach ($breakPoints as $breakPoint) {
             // if value exactly matches break point, just count it now
             if ($breakPoint->getAmount() === $application->amount) {
-                return $application->amount * $breakPoint->getFee();
+                return $amount * $breakPoint->getFee();
             }
         }
 
-        return 0.0;
+        [$minBreakPoint, $maxBreakPoint] = $this->findBreakPoints($breakPoints, $amount);
+        $minFee = $minBreakPoint->getFee();
+
+        // x-x0
+        $deltaFee = $amount - $minBreakPoint->getAmount();
+        // divide by x1-x0
+        $deltaFee = $deltaFee / ($maxBreakPoint->getAmount() - $minBreakPoint->getAmount());
+        // multiply by y1-y0
+        $deltaFee = $deltaFee * ($maxBreakPoint->getFee() - $minBreakPoint->getFee());
+
+        return $this->roundUpFee($amount * ($minFee + $deltaFee));
     }
 
+    private function roundUpFee(float $fee): int
+    {
+        return (int) (ceil(round($fee / 5, 2)) * 5);
+    }
     private function getBreakPoints(): array
     {
         $breakPoints = $this->breakPointService->getBreakPoints();
@@ -42,5 +57,34 @@ class FeeCalculator implements FeeCalculatorInterface
         }
 
         return $breakPoints;
+    }
+
+    private function findBreakPoints(array $breakPoints, float $loanAmount): array
+    {
+        $minBreakpoint = $maxBreakpoint = null;
+
+        /** @var BreakPoint $breakpoint */
+        foreach ($breakPoints as $breakpoint)
+        {
+            $breakpointAmount = $breakpoint->getAmount();
+
+            if (($breakpointAmount < $loanAmount) &&
+                (true === empty($minBreakpoint) || ($minBreakpoint->getAmount() < $breakpointAmount)))
+            {
+                $minBreakpoint = $breakpoint;
+            }
+
+            if (($loanAmount < $breakpointAmount) &&
+                (true === empty($maxBreakpoint) or ($breakpointAmount < $maxBreakpoint->getAmount())))
+            {
+                $maxBreakpoint = $breakpoint;
+            }
+        }
+
+        if (($minBreakpoint === null) or ($maxBreakpoint === null)) {
+            throw new InvalidArgumentException(sprintf('No break point found for loan amount %s', $loanAmount));
+        }
+
+        return [$minBreakpoint, $maxBreakpoint];
     }
 }

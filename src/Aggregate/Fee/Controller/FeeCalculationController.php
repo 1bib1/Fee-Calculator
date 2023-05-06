@@ -22,7 +22,7 @@ class FeeCalculationController extends AbstractController
         $calculatedValue = $this->feeCalculationService->calculateFromRequest($request);
 
         return $this->json([
-            'fee' => 0.0,
+            'fee' => $calculatedValue,
         ]);
     }
 }

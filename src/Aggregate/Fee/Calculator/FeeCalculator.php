@@ -21,27 +21,27 @@ class FeeCalculator implements FeeCalculatorInterface
     public function calculate(LoanProposal $application): float
     {
         $breakPoints = $this->getBreakPoints();
-        $amount = (float) $application->amount; // could be int
+        $requestedLoanAmount = (float) $application->amount; // could be int
 
         /** @var BreakPoint $breakPoint */
         foreach ($breakPoints as $breakPoint) {
             // if value exactly matches break point, just count it now
             if ($breakPoint->getAmount() === $application->amount) {
-                return $amount * $breakPoint->getFee();
+                return $this->roundUpFee($requestedLoanAmount * $breakPoint->getFee());
             }
         }
 
-        [$minBreakPoint, $maxBreakPoint] = $this->findBreakPoints($breakPoints, $amount);
+        [$minBreakPoint, $maxBreakPoint] = $this->findBreakPoints($breakPoints, $requestedLoanAmount);
         $minFee = $minBreakPoint->getFee();
 
         // x-x0
-        $deltaFee = $amount - $minBreakPoint->getAmount();
+        $deltaFee = $requestedLoanAmount - $minBreakPoint->getAmount();
         // divide by x1-x0
         $deltaFee = $deltaFee / ($maxBreakPoint->getAmount() - $minBreakPoint->getAmount());
         // multiply by y1-y0
         $deltaFee = $deltaFee * ($maxBreakPoint->getFee() - $minBreakPoint->getFee());
 
-        return $this->roundUpFee($amount * ($minFee + $deltaFee));
+        return $this->roundUpFee($requestedLoanAmount * ($minFee + $deltaFee));
     }
 
     private function roundUpFee(float $fee): int
@@ -81,7 +81,7 @@ class FeeCalculator implements FeeCalculatorInterface
             }
         }
 
-        if (($minBreakpoint === null) or ($maxBreakpoint === null)) {
+        if (($minBreakpoint === null) or ($maxBreakpoint === null)) { // should have separate checks
             throw new InvalidArgumentException(sprintf('No break point found for loan amount %s', $loanAmount));
         }
 

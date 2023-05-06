@@ -7,6 +7,7 @@ namespace App\FeeCalculator\Aggregate\Fee\Service;
 use App\FeeCalculator\Domain\Fee\Interface\FeeCalculatorInterface;
 use App\FeeCalculator\Domain\Fee\ValueObject\LoanProposal;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class FeeCalculationService
@@ -18,16 +19,10 @@ class FeeCalculationService
 
     public function calculateFromRequest(Request $request): int
     {
-        //TODO: implement 6.3 feature for request mapping
         $application = $this->createLoanProposalFromRequest($request);
         $this->validateLoanProposal($application);
 
-        return $this->roundUpFee($this->calculator->calculate($application));
-    }
-
-    private function roundUpFee(float $fee): int
-    {
-        return (int) (ceil($fee / 5 ) * 5);
+        return (int) $this->calculator->calculate($application);
     }
 
     private function createLoanProposalFromRequest(Request $request): LoanProposal
@@ -45,7 +40,7 @@ class FeeCalculationService
         $violations = $this->validator->validate($application);
 
         if ($violations->count() > 0) {
-            throw new \RuntimeException('Invalid loan proposal');
+            throw new ValidationFailedException(null, $violations);
         }
     }
 }

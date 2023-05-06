@@ -8,7 +8,7 @@ services:
     App\FeeCalculator\:
         resource: '../src/'
         exclude:
-            - '../src/Domain/*/{Interface,TransferObject}/'
+            - '../src/Domain/*/{TransferObject}/'
             - '../src/Infrastructure/{Entity}/'
             - '../src/Kernel.php'
     App\FeeCalculator\Fixtures\:

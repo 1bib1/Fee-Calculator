@@ -1,5 +1,5 @@
 controllers:
     resource:
-        path: ../src/Application/Controller/
-        namespace: App\FeeCalculator\Controller
+        path: ../src/Aggregate/Controller/Fee
+        namespace: App\FeeCalculator\Aggregate\Controller\Fee
     type: attribute

@@ -13,7 +13,7 @@ class FeeCalculatorTest extends TestCase
         parent::setUp();
     }
 
-    public function test():void
+    public function test(): void
     {
         $this->assertTrue(true);
     }

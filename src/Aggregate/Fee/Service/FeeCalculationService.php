@@ -20,7 +20,7 @@ class FeeCalculationService
     public function calculateFromRequest(Request $request): int
     {
         $application = $this->createLoanProposalFromRequest($request);
-        $this->validateLoanPropossal($application);
+        $this->validateLoanProposal($application);
 
         return (int) $this->calculator->calculate($application);
     }

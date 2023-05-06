@@ -11,6 +11,12 @@ services:
             - '../src/Domain/*/{TransferObject}/'
             - '../src/Infrastructure/{Entity}/'
             - '../src/Kernel.php'
+
     App\FeeCalculator\Fixtures\:
             resource: '../fixtures/'
             tags: [ 'doctrine.fixture.orm' ]
+
+    subscribers:
+        namespace: App\FeeCalculator\Application\Subscriber\
+        resource: '../src/Application/*/Subscriber/'
+        tags: ['event_subscriber']

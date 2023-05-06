@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class LoanProposal
 {
     #[Assert\NotBlank]
-    #[Assert\Type('integer'), Assert\Positive, Assert\Range(min: 12, max: 24)]
+    #[Assert\Type('integer'), Assert\Choice([12, 24])]
     public readonly mixed $term;
 
     #[Assert\NotBlank]
